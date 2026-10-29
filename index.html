@@ -1,22 +1,342 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="KiaraDB - built for Azure Static Web Apps." />
-    <title>KiaraDB</title>
-    <script type="module" src="/src/main.js"></script>
-  </head>
-  <body>
-    <main class="card">
-      <p class="eyebrow">AZURE STATIC WEB APPS</p>
-      <h1>Welcome to KiaraDB</h1>
-      <p>Your vanilla HTML, CSS, and JavaScript starter is ready to customize.</p>
-      <button id="counter" type="button">Clicks: 0</button>
-      <p id="status" class="status" role="status">Try the button to get started.</p>
-      <a href="https://learn.microsoft.com/azure/static-web-apps/">
-        Explore Azure Static Web Apps documentation &rarr;
-      </a>
-    </main>
-  </body>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kiara Field Notes</title>
+<meta name="description" content="Live demo of Kiara, an open-source in-memory search library for Java and TypeScript. Filter 10,000 products by any mix of fields, with typo correction.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2311263D'/><text x='16' y='23' font-family='Georgia,serif' font-size='20' text-anchor='middle' fill='%23B99B62'>K</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<meta property="og:title" content="Kiara: search any mix of fields, typos included">
+<meta property="og:description" content="Live demo: 10,000 products filtered and searched in the browser with kiara-ts.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="./src/style.css">
+<script type="importmap">{ "imports": { "@kapoorlabs/kiara-ts": "https://cdn.jsdelivr.net/npm/@kapoorlabs/kiara-ts@1.2.0/+esm" } }</script>
+<script type="module" src="./src/main.js"></script>
+</head>
+<body>
+<div class="topline gutter"><div class="wrap"><span>Field Notes &middot; Issue 01 &middot; October 2026</span><span>A live demo of kiara-ts, running in your browser</span></div></div>
+
+<div class="progress-line" id="progress-line" aria-hidden="true"></div>
+<header class="mast gutter">
+  <div class="wrap">
+    <a class="logo" href="#top"><b>Kiara</b><span>Field Notes</span></a>
+    <nav aria-label="Sections">
+      <a href="#focus">The question</a>
+      <a href="#try">Try it</a>
+      <a href="#benchmarks">Benchmarks</a>
+      <a href="#fit">Fit check</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a class="btn primary" href="#try">Run the live demo</a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero gutter">
+    <div class="hero-bg" aria-hidden="true"><i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i><svg id="trie-art"></svg></div>
+    <div class="wrap">
+      <div class="hero-copy">
+        <span class="kicker" data-enter style="animation-delay:.1s"><span class="label">Feature</span>Search engineering</span>
+        <h1 data-enter style="animation-delay:.25s">Your users choose the filters. Should you design an index <em>for every combination?</em></h1>
+        <p class="lede" data-enter style="animation-delay:.45s">Kiara is an open-source, in-memory search library for Java and TypeScript. Load your records, call <code>prepare()</code> once, and search by any mix of fields, with typo correction and type-ahead built in.</p>
+        <div class="ctas" data-enter style="animation-delay:.6s">
+          <a class="btn primary" href="#try">Run the live demo &rarr;</a>
+          <a class="btn line" href="#fit">Take the 1-minute fit check</a>
+        </div>
+        <ul class="trust" data-enter style="animation-delay:.75s">
+          <li>Free and open source</li>
+          <li>Zero dependencies</li>
+          <li>Java 8+ and TypeScript</li>
+          <li>Runs in the browser</li>
+        </ul>
+      </div>
+      <div class="hero-media">
+        <div class="film wipe">
+          <span class="leak" aria-hidden="true"></span>
+          <video autoplay muted loop playsinline preload="auto" poster="https://assets.mixkit.co/videos/41651/41651-thumb-720-0.jpg"><source src="https://assets.mixkit.co/videos/41651/41651-720.mp4" type="video/mp4"></video>
+          <span class="caption">A developer at work. Video: Mixkit</span>
+        </div>
+        <div class="float-card" data-enter style="animation-delay:1s">
+          <span class="small">Three fields equal, 100,000 records</span>
+          <span class="big">0.37 ms</span>
+          <span class="vs">Fuse.js: 47 ms</span>
+          <span class="source">Published benchmark, see below</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec focus gutter" id="focus">
+    <span class="chapter" aria-hidden="true">01</span>
+    <div class="wrap">
+      <div class="rule reveal"></div>
+      <div class="grid2">
+        <div class="article reveal">
+          <span class="kicker"><span class="label">In focus</span>Data structures</span>
+          <h2>Ten filter fields. 1,023 possible combinations.</h2>
+          <p class="dateline">Based on KapoorLabs' engineering article, October 2026</p>
+          <p>Every field you add to a filter panel doubles the combinations users can pick. Exact-key lookups need <span class="hl">one key per combination</span>. Composite indexes cut that down, but each one only serves its leading columns.</p>
+          <p>Kiara keeps <span class="hl">one index per field</span> and joins them at query time. Records are stored as paths in a tree, nodes are numbered, and conditions combine with <span class="hl">integer range checks</span>.</p>
+        </div>
+        <div class="facts">
+          <div class="fact reveal"><b data-count="1023">1,023</b><span>exact-key lookups needed for 10 fields</span></div>
+          <div class="fact reveal"><b data-count="252">252</b><span>composite ordered indexes, each limited to its leading columns</span></div>
+          <div class="fact kiara reveal"><b data-count="10">10</b><span>per-field indexes, combined per query. This is Kiara's approach, built by one <code>prepare()</code> call.</span></div>
+          <p class="source reveal">Source: <a href="https://dev.to/kapoorlabscom/your-data-has-10-attributes-how-many-indexes-do-you-need-to-search-within-millisecond-4a89" target="_blank" rel="noopener">"Your data has 10 attributes...", KapoorLabs on dev.to</a></p>
+        </div>
+      </div>
+      <div class="focus-photo wipe" data-watch>
+        <video autoplay muted loop playsinline preload="metadata" poster="https://assets.mixkit.co/videos/46635/46635-thumb-720-0.jpg"><source src="https://assets.mixkit.co/videos/46635/46635-720.mp4" type="video/mp4"></video>
+        <span class="caption">Looking closer at the data. Video: Mixkit</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="vtext gutter" aria-label="Any field. Any mix.">
+    <div class="wrap">
+      <canvas id="vtext" role="img" aria-label="Any field. Any mix."></canvas>
+      <p class="vtext-cap"><span>Any field. Any mix. One prepare() call.</span><span class="source">Footage inside the type: Mixkit</span></p>
+    </div>
+    <video id="vtext-src" muted loop playsinline preload="auto" aria-hidden="true" src="https://assets.mixkit.co/videos/41656/41656-720.mp4"></video>
+  </section>
+
+  <section class="sec explainer gutter">
+    <span class="chapter" aria-hidden="true">02</span>
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="kicker">Explainer</span>
+        <h2>Three things a plain loop <em>can't</em> do.</h2>
+        <p class="lede">A hand-written filter can match exact values. Users type faster and less carefully than that.</p>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Kiara capabilities">
+        <button class="tab" role="tab" id="tab-0" aria-selected="true" aria-controls="panel-0"><small>01</small>Typo correction</button>
+        <button class="tab" role="tab" id="tab-1" aria-selected="false" aria-controls="panel-1"><small>02</small>Type-ahead</button>
+        <button class="tab" role="tab" id="tab-2" aria-selected="false" aria-controls="panel-2"><small>03</small>Any-combination filters</button>
+      </div>
+      <div class="panel show" role="tabpanel" id="panel-0" aria-labelledby="tab-0">
+        <div class="panel-copy">
+          <h3>"wireles hedphones" still finds wireless headphones.</h3>
+          <p>Fields marked <code>oneEditAway</code> accept one wrong, missing or extra letter per word. The result tells you what was corrected, so your interface can show it.</p>
+          <p>Plurals work too. With stemming, "laptops" finds laptop.</p>
+        </div>
+        <div class="doc"><div class="doc-head"><span>keyword-search.ts</span><span>example</span></div>
+<pre><span class="c">// mark the field once</span>
+textField("name", { <span class="mark">oneEditAway: true</span>, stemmedIndex: true })
+
+keywordSearch.bestMatch("wireles hedphones")
+<span class="c">// correctedKeywords:</span>
+<span class="mark">{ wireles: "wireless", hedphones: "headphones" }</span></pre></div>
+      </div>
+      <div class="panel" role="tabpanel" id="panel-1" aria-labelledby="tab-1" hidden>
+        <div class="panel-copy">
+          <h3>Suggestions while the user is still typing.</h3>
+          <p>A dictionary trie predicts whole words from the first letters. Type "wi" and get "wireless". It's the same data structure the search uses, so there's nothing extra to keep in sync.</p>
+        </div>
+        <div class="doc"><div class="doc-head"><span>autocomplete.ts</span><span>example</span></div>
+<pre>const dictionary = new DictionaryTrie();
+dictionary.addText("wireless headphones");
+
+dictionary.predict("wi", 5)
+<span class="c">// &rarr;</span> <span class="mark">["wireless"]</span></pre></div>
+      </div>
+      <div class="panel" role="tabpanel" id="panel-2" aria-labelledby="tab-2" hidden>
+        <div class="panel-copy">
+          <h3>Equality, ranges, lists and dates, in any mix.</h3>
+          <p>Users pick filters in unpredictable combinations. Kiara answers each one from the same prepared store, with no index planning per query.</p>
+        </div>
+        <div class="doc"><div class="doc-head"><span>search.ts</span><span>example</span></div>
+<pre>store.search([
+  createCondition({ field: "category", operator: Operator.EQUAL, values: ["laptop"] }),
+  createCondition({ field: "price", operator: <span class="mark">Operator.BETWEEN</span>, lowerValue: 300, upperValue: 900 }),
+  createCondition({ field: "tags", operator: <span class="mark">Operator.CONTAINS_ALL</span>, values: ["usb-c", "eco"] }),
+]);</pre></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec gutter" id="try">
+    <span class="chapter" aria-hidden="true">03</span>
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="kicker"><span class="label">Live</span>Try it yourself</span>
+        <h2>Type badly. Filter freely. <em>Watch the clock.</em></h2>
+        <p class="lede">10,000 example products, searched by the real kiara-ts library inside your browser. Nothing is sent anywhere.</p>
+      </div>
+      <div class="play-card reveal">
+        <div class="searchbox">
+          <label for="q">Keyword search with typo correction and type-ahead</label>
+          <div class="search-field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input id="q" type="text" autocomplete="off" spellcheck="false" placeholder="Try: wireles hedphones" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggest">
+          </div>
+          <ul id="suggest" role="listbox" hidden></ul>
+          <div class="presets">
+            <span>Examples:</span>
+            <button class="preset" data-preset="typo">Two typos</button>
+            <button class="preset" data-preset="plural">Plural + price + rating</button>
+            <button class="preset" data-preset="combo">Brand + color + tag</button>
+            <button class="preset" data-preset="range">Monitors $200&ndash;400</button>
+          </div>
+        </div>
+        <div class="cats" id="f-category" role="group" aria-label="Category"></div>
+        <div class="filters">
+          <div class="fgroup"><div class="fhead">Brand</div><div class="chips" id="f-brand"></div></div>
+          <div class="fgroup"><div class="fhead">Color</div><div class="chips" id="f-color"></div></div>
+          <div class="fgroup">
+            <div class="fhead">Price and rating</div>
+            <div class="range">
+              <label for="f-min">Min $<input id="f-min" type="number" min="0" step="10" placeholder="0"></label>
+              <label for="f-max">Max $<input id="f-max" type="number" min="0" step="10" placeholder="2400"></label>
+            </div>
+            <label for="f-rating">Rating
+              <select id="f-rating">
+                <option value="">Any</option>
+                <option value="3">3.0 and up</option>
+                <option value="3.5">3.5 and up</option>
+                <option value="4">4.0 and up</option>
+                <option value="4.5">4.5 and up</option>
+              </select>
+            </label>
+          </div>
+          <div class="fgroup"><div class="fhead">Tags <button class="toggle" id="f-tagmode" type="button">match any</button></div><div class="chips" id="f-tags"></div></div>
+        </div>
+        <div class="summary" aria-live="polite">
+          <span class="count" id="count">Loading...</span>
+          <span class="time" id="time">&ndash; ms</span>
+          <span class="combo" id="combo"></span>
+          <button class="reset" id="reset" type="button">Clear all</button>
+        </div>
+        <div class="fixes" id="fixes" hidden></div>
+        <div class="grid" id="rows"></div>
+        <p class="note" id="shown-note" hidden></p>
+        <div class="code">
+          <div class="code-head"><span>The query you just ran</span><button class="copy" id="copy" type="button">Copy</button></div>
+          <pre id="code"></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec gutter" id="benchmarks" style="background:var(--paper-2)">
+    <span class="chapter" aria-hidden="true">04</span>
+    <div class="wrap">
+      <div class="rule reveal"></div>
+      <div class="sec-head reveal">
+        <span class="kicker"><span class="label">Analysis</span>Benchmarks</span>
+        <h2>Measured against Fuse.js on 100,000 records.</h2>
+        <p class="lede">Median query time, lower is better. Kiara won all 26 scenarios both libraries can run. The bars use a log scale, because the gap is too wide for a straight one.</p>
+      </div>
+      <div class="chart" id="chart">
+        <div class="legend"><span><i style="background:var(--navy)"></i>Kiara (kiara-ts 1.2.0)</span><span><i style="background:var(--gold)"></i>Fuse.js</span></div>
+        <div id="bench-rows"></div>
+        <div class="axis"><span></span><div class="ticks"><span style="left:0">0.1 ms</span><span style="left:25%">1</span><span style="left:50%">10</span><span style="left:75%">100</span><span style="left:100%">1,000 ms</span></div><span></span></div>
+      </div>
+      <div class="honest">
+        <div class="reveal"><b>Where Fuse.js wins: build time</b><span>0.27 s for Fuse.js, 4.3 s for Kiara to prepare 100,000 records.</span></div>
+        <div class="reveal"><b>Where Fuse.js wins: memory</b><span>110 MB for Fuse.js, 489 MB for Kiara's prepared indexes.</span></div>
+        <div class="reveal"><b>Choosing between them</b><span>Fuse.js suits fast-changing data and looser fuzzy matching. Kiara suits read-heavy data with many filter combinations.</span></div>
+      </div>
+      <p class="source" style="margin-top:18px">Source: <a href="https://dev.to/kapoorlabscom/meet-kiaradb-client-side-search-up-to-500x-faster-than-fusejs-its-not-even-close-158k" target="_blank" rel="noopener">KapoorLabs benchmark on dev.to</a>. One machine, mostly synthetic data, median of three isolated runs. Your results will differ.</p>
+    </div>
+  </section>
+
+  <section class="sec behind gutter">
+    <span class="chapter" aria-hidden="true">05</span>
+    <div class="wrap">
+      <div class="grid2">
+        <div class="xfade wipe" data-watch>
+          <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1400&h=1050&fit=crop&q=72&fm=jpg" alt="Handwritten notes on a desk">
+          <img class="second" src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1400&h=1050&fit=crop&q=72&fm=jpg" alt="Developers working together at laptops">
+          <span class="caption">From research notes to a library developers use. Photos: Unsplash</span>
+        </div>
+        <div style="display:grid;gap:20px" class="reveal">
+          <span class="kicker">Behind the library</span>
+          <h2>Built from a research paper. <em>Tested like infrastructure.</em></h2>
+          <ul class="proof">
+            <li><b>2020</b><span>The algorithm comes from a <a href="https://jac.ut.ac.ir/article_76227.html" target="_blank" rel="noopener">research paper</a> by the library's author.</span></li>
+            <li><b>461</b><span>Tests passing in the Java library, with CI on Java 8, 11, 17, 21 and 25.</span></li>
+            <li><b>0</b><span>Runtime dependencies in the TypeScript library.</span></li>
+            <li><b>2</b><span>Licenses, both permissive: Apache-2.0 for Java, MIT for TypeScript.</span></li>
+          </ul>
+          <p style="color:var(--muted)">The docs also say clearly when <em>not</em> to use it: frequent writes, durable storage or relational joins.</p>
+        </div>
+      </div>
+      <ol class="steps reveal" data-watch>
+        <li><span class="n">1</span><h3>Describe your fields</h3><p>A schema or decorators. <code>textField("name")</code></p></li>
+        <li><span class="n">2</span><h3>Load and prepare</h3><p>One call builds every index. <code>store.prepare()</code></p></li>
+        <li><span class="n">3</span><h3>Search any combination</h3><p>In the browser or on a Java server. <code>store.search([...])</code></p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="sec quiz-sec gutter" id="fit">
+    <span class="chapter" aria-hidden="true">06</span>
+    <div class="wrap">
+      <div class="sec-head reveal" style="margin-inline:auto;text-align:center;justify-items:center">
+        <span class="kicker">Fit check</span>
+        <h2>Is Kiara right for your data?</h2>
+        <p class="lede">Five questions, about one minute. If another tool fits your case better, it says so.</p>
+      </div>
+      <div class="quiz reveal" id="quiz">
+        <div class="quiz-top">
+          <div class="quiz-meta"><span id="quiz-step">Step 1 of 5</span><span>About 1 minute</span></div>
+          <div class="progress" aria-hidden="true"><i id="quiz-bar"></i></div>
+        </div>
+        <div class="quiz-body" id="quiz-body"></div>
+        <div class="quiz-nav">
+          <button class="btn line" id="quiz-back" type="button">&larr; Back</button>
+          <span class="privacy">Your answers stay in this page. Nothing is sent or stored.</span>
+          <button class="btn primary" id="quiz-next" type="button">Continue &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec gutter" id="faq">
+    <span class="chapter" aria-hidden="true">07</span>
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="kicker">Questions</span>
+        <h2>Before you try it.</h2>
+      </div>
+      <div class="faq reveal" id="faq-list"></div>
+    </div>
+  </section>
+
+  <section class="closing gutter">
+    <i class="spot" aria-hidden="true"></i>
+    <span class="leak" aria-hidden="true"></span>
+    <video autoplay muted loop playsinline preload="metadata" poster="https://assets.mixkit.co/videos/4872/4872-thumb-720-0.jpg"><source src="https://assets.mixkit.co/videos/4872/4872-720.mp4" type="video/mp4"></video>
+    <div class="wrap">
+      <span class="kicker">Next step</span>
+      <h2>Try it first. Then decide.</h2>
+      <p>The demo runs in your browser in seconds. If it fits your data, the code is one install away, and the authors want to hear what you build.</p>
+      <div class="ctas">
+        <a class="btn gold" href="#try">Run the live demo &rarr;</a>
+        <a class="btn line-light" href="https://github.com/kapoorlabs/kiara-ts" target="_blank" rel="noopener">kiara-ts on GitHub</a>
+        <a class="btn line-light" href="https://github.com/kapoorlabs/kiara" target="_blank" rel="noopener">Kiara for Java</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="gutter">
+  <div class="wrap">
+    <div class="cols">
+      <a href="https://www.npmjs.com/package/@kapoorlabs/kiara-ts" target="_blank" rel="noopener">npm package</a>
+      <a href="https://github.com/kapoorlabs/kiara-ts" target="_blank" rel="noopener">TypeScript repo</a>
+      <a href="https://github.com/kapoorlabs/kiara" target="_blank" rel="noopener">Java repo</a>
+      <a href="https://jac.ut.ac.ir/article_76227.html" target="_blank" rel="noopener">Research paper</a>
+    </div>
+    <span>Product data is generated, and every query runs in your browser.</span>
+    <span>Built on @kapoorlabs/kiara-ts 1.2.0 (MIT, &copy; 2026 Kapoor labs). Videos from Mixkit, photos from Unsplash.</span>
+  </div>
+</footer>
+
+<div class="sticky-cta" id="sticky"><a class="btn primary" href="#try">Run the live demo &rarr;</a></div>
+</body>
 </html>
