@@ -1,0 +1,71 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #172b4d;
+  background: #edf4fc;
+  color-scheme: light;
+  line-height: 1.6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  padding: 1.5rem;
+  display: grid;
+  place-items: center;
+}
+
+.card {
+  width: 100%;
+  max-width: 42rem;
+  padding: clamp(1.5rem, 5vw, 3rem);
+  border: 1px solid #d5e3f3;
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: 0 1rem 3rem #172b4d12;
+}
+
+.eyebrow {
+  color: #005a9e;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.15;
+}
+
+button {
+  margin-top: 1rem;
+  padding: 0.75rem 1.25rem;
+  border: 0;
+  border-radius: 0.5rem;
+  color: #fff;
+  background: #0067b8;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #005a9e;
+}
+
+:focus-visible {
+  outline: 3px solid #172b4d;
+  outline-offset: 4px;
+}
+
+.status {
+  color: #425570;
+}
+
+a {
+  color: #005a9e;
+  overflow-wrap: anywhere;
+}
