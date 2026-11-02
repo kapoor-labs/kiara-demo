@@ -34,8 +34,8 @@ Output goes to `dist`. Paths are relative so it works under /kiara-demo/ or on a
 
 ## Deploy
 
-GitHub Pages works without a build, `index.html` has an import map that loads kiara-ts from jsdelivr. Settings > Pages > main / root.
+GitHub Pages, no build needed: `index.html` has an import map that loads kiara-ts from jsdelivr. Settings > Pages > main / root.
 
-Azure: `.github/workflows/azure-static-web-apps.yml` builds and uploads `dist` on push to main. Needs the `AZURE_STATIC_WEB_APPS_API_TOKEN` secret (Azure portal > Manage deployment token).
+`og.png` is the preview image for links shared on Reddit, LinkedIn, Discord etc.
 
 Videos from Mixkit, photos from Unsplash.
