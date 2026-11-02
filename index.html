@@ -67,8 +67,8 @@
         </div>
         <div class="float-card" data-enter style="animation-delay:1s">
           <span class="small">Three fields equal, 100,000 records</span>
-          <span class="big">0.37 ms</span>
-          <span class="vs">Fuse.js: 47 ms</span>
+          <span class="big">0.16 ms</span>
+          <span class="vs">Fuse.js: 41 ms</span>
           <span class="source">Published benchmark, see below</span>
         </div>
       </div>
@@ -124,17 +124,17 @@
       </div>
       <div class="panel show" role="tabpanel" id="panel-0" aria-labelledby="tab-0">
         <div class="panel-copy">
-          <h3>"wireles hedphones" still finds wireless headphones.</h3>
-          <p>Fields marked <code>oneEditAway</code> accept one wrong, missing or extra letter per word. The result tells you what was corrected, so your interface can show it.</p>
+          <h3>"wireles keybord" still finds wireless keyboards.</h3>
+          <p>Fields marked <code>oneEditAway</code> can fix one wrong, missing or extra letter per word. It doesn't catch every typo, and one near the start of a word often stays uncorrected. The result tells you what was corrected, so your interface can show it.</p>
           <p>Plurals work too. With stemming, "laptops" finds laptop.</p>
         </div>
         <div class="doc"><div class="doc-head"><span>keyword-search.ts</span><span>example</span></div>
 <pre><span class="c">// mark the field once</span>
 textField("name", { <span class="mark">oneEditAway: true</span>, stemmedIndex: true })
 
-keywordSearch.bestMatch("wireles hedphones")
+keywordSearch.bestMatch("wireles keybord")
 <span class="c">// correctedKeywords:</span>
-<span class="mark">{ wireles: "wireless", hedphones: "headphones" }</span></pre></div>
+<span class="mark">{ wireles: "wireless", keybord: "keyboard" }</span></pre></div>
       </div>
       <div class="panel" role="tabpanel" id="panel-1" aria-labelledby="tab-1" hidden>
         <div class="panel-copy">
@@ -176,7 +176,7 @@ dictionary.predict("wi", 5)
           <label for="q">Keyword search with typo correction and type-ahead</label>
           <div class="search-field">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-            <input id="q" type="text" autocomplete="off" spellcheck="false" placeholder="Try: wireles hedphones" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggest">
+            <input id="q" type="text" autocomplete="off" spellcheck="false" placeholder="Try: wireles keybord" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggest">
           </div>
           <ul id="suggest" role="listbox" hidden></ul>
           <div class="presets">
@@ -236,16 +236,16 @@ dictionary.predict("wi", 5)
         <p class="lede">Median query time, lower is better. Kiara won all 26 scenarios both libraries can run. The bars use a log scale, because the gap is too wide for a straight one.</p>
       </div>
       <div class="chart" id="chart">
-        <div class="legend"><span><i style="background:var(--navy)"></i>Kiara (kiara-ts 1.2.0)</span><span><i style="background:var(--gold)"></i>Fuse.js</span></div>
+        <div class="legend"><span><i style="background:var(--navy)"></i>Kiara (kiara-ts 1.2.1)</span><span><i style="background:var(--gold)"></i>Fuse.js</span></div>
         <div id="bench-rows"></div>
-        <div class="axis"><span></span><div class="ticks"><span style="left:0">0.1 ms</span><span style="left:25%">1</span><span style="left:50%">10</span><span style="left:75%">100</span><span style="left:100%">1,000 ms</span></div><span></span></div>
+        <div class="axis"><span></span><div class="ticks"><span style="left:0">0.01<i> ms</i></span><span style="left:20%">0.1</span><span style="left:40%">1</span><span style="left:60%">10</span><span style="left:80%">100</span><span style="left:100%">1,000<i> ms</i></span></div><span></span></div>
       </div>
       <div class="honest">
-        <div class="reveal"><b>Where Fuse.js wins: build time</b><span>0.27 s for Fuse.js, 4.3 s for Kiara to prepare 100,000 records.</span></div>
-        <div class="reveal"><b>Where Fuse.js wins: memory</b><span>110 MB for Fuse.js, 489 MB for Kiara's prepared indexes.</span></div>
+        <div class="reveal"><b>Where Fuse.js wins: build time</b><span>0.23 s for Fuse.js, 4.0 s for Kiara to prepare 100,000 records.</span></div>
+        <div class="reveal"><b>Where Fuse.js wins: memory</b><span>110 MB for Fuse.js, 477 MB for Kiara's prepared indexes.</span></div>
         <div class="reveal"><b>Choosing between them</b><span>Fuse.js suits fast-changing data and looser fuzzy matching. Kiara suits read-heavy data with many filter combinations.</span></div>
       </div>
-      <p class="source" style="margin-top:18px">Source: <a href="https://dev.to/kapoorlabscom/meet-kiaradb-client-side-search-up-to-500x-faster-than-fusejs-its-not-even-close-158k" target="_blank" rel="noopener">KapoorLabs benchmark on dev.to</a>. One machine, mostly synthetic data, median of three isolated runs. Your results will differ.</p>
+      <p class="source" style="margin-top:18px">Source: <a href="https://github.com/kapoor-labs/kiara-ts-examples/blob/main/docs/fuse-comparison.md" target="_blank" rel="noopener">KapoorLabs benchmark on GitHub</a>. One machine, mostly synthetic data, median of three isolated runs. Your results will differ.</p>
     </div>
   </section>
 

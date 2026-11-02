@@ -231,16 +231,16 @@ import { makeCatalog } from "./catalog.js";
     });
   }));
 
-  // bench chart, log scale 0.1 - 1000 ms
+  // bench chart, log scale 0.01 - 1000 ms
   const BENCH = [
-    ["First 20 active products", 0.15, 75, "515\u00d7"],
-    ["Stemmed \"chargers\", top 10", 1.0, 363, "365\u00d7"],
-    ["Typo \"wireles lamp\", top 10", 1.95, 422, "216\u00d7"],
-    ["One date equal", 0.28, 45, "163\u00d7"],
-    ["Three fields equal", 0.37, 47, "128\u00d7"],
-    ["Contains all of two tags", 3.2, 40, "12\u00d7"],
+    ["First 20 active products", 0.016, 62, "3,845\u00d7"],
+    ["Stemmed \"chargers\", top 10", 0.13, 370, "2,937\u00d7"],
+    ["Typo \"wireles lamp\", top 10", 1.36, 432, "318\u00d7"],
+    ["Three fields equal", 0.16, 41, "262\u00d7"],
+    ["One date equal", 0.32, 36, "114\u00d7"],
+    ["Contains all of two tags", 2.4, 32, "13\u00d7"],
   ];
-  const pos = (ms) => ((Math.log10(ms) + 1) / 4) * 100;
+  const pos = (ms) => ((Math.log10(ms) + 2) / 5) * 100;
   $("bench-rows").innerHTML = BENCH.map(([q, k, f, x], i) => `
     <div class="brow"><span class="q">${esc(q)}</span>
       <div class="bars">
@@ -253,7 +253,7 @@ import { makeCatalog } from "./catalog.js";
   const FAQ = [
     ["Is Kiara free to use?", "Yes. The Java library is licensed under Apache-2.0 and the TypeScript library under MIT. Both are on GitHub."],
     ["Does it store data on disk?", "No. Kiara is an in-memory, read-only store. You load records, prepare them, and search. To change the data, prepare a new snapshot and swap it in."],
-    ["How much data can it handle?", "Records and indexes must fit in memory. In the published benchmark, preparing 100,000 records took 4.3 seconds and 489 MB. Measure with your own data, especially in a browser."],
+    ["How much data can it handle?", "Records and indexes must fit in memory. In the published benchmark, preparing 100,000 records took 4.0 seconds and 477 MB. Measure with your own data, especially in a browser."],
     ["How is it different from Fuse.js?", "Fuse.js is a fuzzy matcher that builds quickly and tolerates looser spelling. Kiara prepares indexes so exact multi-field filters, stemming, one-edit typo fixes and type-ahead run fast on read-heavy data."],
     ["Which Java and TypeScript versions are supported?", "The Java library targets Java 8 and is tested on Java 8, 11, 17, 21 and 25. The TypeScript library is an ESM package with type declarations and uses standard TypeScript 5 decorators if you choose decorators."],
     ["Where can I ask questions or report a bug?", "Open an issue on the GitHub repository for the library you use. Feedback on use cases is welcome too."],
@@ -297,7 +297,7 @@ import { makeCatalog } from "./catalog.js";
       if (level === "good") level = "maybe";
       reasons.push("More than a million records must fit in memory with their indexes. Test memory early, or split the data by feature or key.");
     } else if (answers.size === "l") {
-      reasons.push("At this size, prepare once at startup. The published benchmark prepared 100,000 records in 4.3 seconds.");
+      reasons.push("At this size, prepare once at startup. The published benchmark prepared 100,000 records in 4.0 seconds.");
     }
     if (answers.fields === "few" && answers.need === "combo") {
       if (level === "good") level = "maybe";
@@ -634,7 +634,7 @@ import { makeCatalog } from "./catalog.js";
   }
 
   const PRESETS = {
-    typo: { q: "wireles hedphones" },
+    typo: { q: "wireles keybord" },
     plural: { q: "gaming laptops", max: 800, rating: "4" },
     combo: { brands: ["Kestrel"], colors: ["red"], tags: ["usb-c"] },
     range: { category: "monitor", min: 200, max: 400 },
