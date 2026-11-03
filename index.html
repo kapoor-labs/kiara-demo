@@ -126,13 +126,16 @@
         <div class="panel-copy">
           <h3>"wireles keybord" still finds wireless keyboards.</h3>
           <p>Fields marked <code>oneEditAway</code> can fix one wrong, missing or extra letter per word. It doesn't catch every typo, and one near the start of a word often stays uncorrected. The result tells you what was corrected, so your interface can show it.</p>
-          <p>Plurals work too. With stemming, "laptops" finds laptop.</p>
+          <p>Plurals work too. Keep a stemmed copy of the field and search both, so "laptops" finds laptop and the typo fixes still work.</p>
         </div>
         <div class="doc"><div class="doc-head"><span>keyword-search.ts</span><span>example</span></div>
-<pre><span class="c">// mark the field once</span>
-textField("name", { <span class="mark">oneEditAway: true</span>, stemmedIndex: true })
+<pre><span class="c">// one field for typos, a stemmed copy for plurals</span>
+textField("name", { <span class="mark">oneEditAway: true</span> })
+textField("nameStem", { stemmedIndex: true })
 
-keywordSearch.bestMatch("wireles keybord")
+keywordSearch.bestMatch("wireles keybord", {
+  fields: ["name", "nameStem"],
+})
 <span class="c">// correctedKeywords:</span>
 <span class="mark">{ wireles: "wireless", keybord: "keyboard" }</span></pre></div>
       </div>
