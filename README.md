@@ -2,6 +2,8 @@
 
 Live demo for [kiara-ts](https://www.npmjs.com/package/@kapoorlabs/kiara-ts). 10k generated products, filter by any mix of fields, typo correction and type-ahead. Everything runs in the browser.
 
+The live search uses best-match keywords across product names, categories, brands, colors, tags and SKUs. Try `refurbishd rgb whte monitr` to find refurbished RGB white monitors despite spelling mistakes across fields, or combine keywords with the existing filters. Type-ahead includes these fields too; name stemming and typo correction are preserved.
+
 Libraries:
 - TypeScript: https://github.com/kapoorlabs/kiara-ts
 - Java: https://github.com/kapoorlabs/kiara

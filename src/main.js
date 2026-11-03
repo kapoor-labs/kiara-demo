@@ -382,14 +382,14 @@ import { makeCatalog } from "./catalog.js";
 
   // nameStem is a stemmed copy of name: keeping stems out of name's correction dictionary lets typo fixes and plurals both work.
   const rows = makeCatalog(RECORDS).map((r) => ({ ...r, nameStem: r.name }));
-  const KEYWORD_FIELDS = ["name", "nameStem"];
+  const KEYWORD_FIELDS = ["name", "nameStem", "category", "brand", "color", "tags", "sku"];
   const schema = defineSchema([
-    textField("category", { caseInsensitive: true }),
-    textField("brand", { caseInsensitive: true }),
-    textField("color", { caseInsensitive: true }),
+    textField("category", { caseInsensitive: true, oneEditAway: true }),
+    textField("brand", { caseInsensitive: true, oneEditAway: true }),
+    textField("color", { caseInsensitive: true, oneEditAway: true }),
     numberField("rating"),
     numberField("price"),
-    textField("tags", { secondaryType: "commaSeparatedStrings", caseInsensitive: true }),
+    textField("tags", { secondaryType: "commaSeparatedStrings", caseInsensitive: true, oneEditAway: true }),
     textField("name", { caseInsensitive: true, oneEditAway: true }),
     textField("nameStem", { caseInsensitive: true, stemmedIndex: true }),
     textField("sku", { caseInsensitive: true }),
@@ -522,7 +522,7 @@ import { makeCatalog } from "./catalog.js";
       : "[]";
     let code;
     if (text) {
-      code = `const { results, correctedKeywords } = keywordSearch.bestMatch(${JSON.stringify(text)}, {\n  fields: ["name", "nameStem"],\n  conditions: ${block("  ")},\n  limit: ${SHOWN},\n});`;
+      code = `const { results, correctedKeywords } = keywordSearch.bestMatch(${JSON.stringify(text)}, {\n  fields: ${JSON.stringify(KEYWORD_FIELDS)},\n  conditions: ${block("  ")},\n  limit: ${SHOWN},\n});`;
     } else if (conds.length) {
       code = `const results = store.search(${block("")});`;
     } else {
@@ -535,11 +535,11 @@ import { makeCatalog } from "./catalog.js";
   }
 
   function card(r, matched, i) {
-    const tags = r.tags.split(", ").map((t) => `<span>${esc(t)}</span>`).join("");
-    return `<article class="card" style="animation-delay:${i * 35}ms"><div class="card-media"><span class="badge">${esc(r.category)}</span>` +
+    const tags = r.tags.split(", ").map((t) => `<span>${highlight(t, matched)}</span>`).join("");
+    return `<article class="card" style="animation-delay:${i * 35}ms"><div class="card-media"><span class="badge">${highlight(r.category, matched)}</span>` +
       `<img src="${imageFor(r)}" alt="" loading="lazy"></div><div class="card-body">` +
       `<h4>${highlight(r.name, matched)}</h4>` +
-      `<div class="meta"><span class="dot" style="background:${SWATCH[r.color]}"></span>${esc(r.brand)} \u00b7 ${esc(r.color)}</div>` +
+      `<div class="meta"><span class="dot" style="background:${SWATCH[r.color]}"></span>${highlight(r.brand, matched)} \u00b7 ${highlight(r.color, matched)}</div>` +
       `<div class="row"><span class="price">$${r.price.toLocaleString("en-US")}</span><span class="stars">\u2605 ${r.rating.toFixed(1)}</span></div>` +
       `<div class="tags">${tags}</div></div></article>`;
   }
@@ -637,6 +637,7 @@ import { makeCatalog } from "./catalog.js";
   }
 
   const PRESETS = {
+    keywords: { q: "refurbishd rgb whte monitr" },
     typo: { q: "wireles keybord" },
     plural: { q: "gaming laptops", max: 800, rating: "4" },
     combo: { brands: ["Kestrel"], colors: ["red"], tags: ["usb-c"] },
@@ -713,7 +714,11 @@ import { makeCatalog } from "./catalog.js";
     keywordSearch = new KeywordSearch(store);
     keywordSearch.bestMatch("warm up", { fields: KEYWORD_FIELDS, limit: 1 });
     dictionary = new DictionaryTrie();
-    for (const r of rows) dictionary.addText(r.name.toLowerCase());
+    for (const r of rows) {
+      for (const field of KEYWORD_FIELDS) {
+        if (field !== "nameStem") dictionary.addText(r[field].toLowerCase());
+      }
+    }
     wire();
     applyPreset("typo");
   }
