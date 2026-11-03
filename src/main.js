@@ -380,7 +380,9 @@ import { makeCatalog } from "./catalog.js";
   const SHOWN = 50;
   const DISPLAYED = 12;
 
-  const rows = makeCatalog(RECORDS);
+  // nameStem is a stemmed copy of name: keeping stems out of name's correction dictionary lets typo fixes and plurals both work.
+  const rows = makeCatalog(RECORDS).map((r) => ({ ...r, nameStem: r.name }));
+  const KEYWORD_FIELDS = ["name", "nameStem"];
   const schema = defineSchema([
     textField("category", { caseInsensitive: true }),
     textField("brand", { caseInsensitive: true }),
@@ -388,7 +390,8 @@ import { makeCatalog } from "./catalog.js";
     numberField("rating"),
     numberField("price"),
     textField("tags", { secondaryType: "commaSeparatedStrings", caseInsensitive: true }),
-    textField("name", { caseInsensitive: true, oneEditAway: true, stemmedIndex: true }),
+    textField("name", { caseInsensitive: true, oneEditAway: true }),
+    textField("nameStem", { caseInsensitive: true, stemmedIndex: true }),
     textField("sku", { caseInsensitive: true }),
   ]);
   const state = { category: null, brands: new Set(), colors: new Set(), tags: new Set(), tagMode: "any" };
@@ -519,7 +522,7 @@ import { makeCatalog } from "./catalog.js";
       : "[]";
     let code;
     if (text) {
-      code = `const { results, correctedKeywords } = keywordSearch.bestMatch(${JSON.stringify(text)}, {\n  fields: ["name"],\n  conditions: ${block("  ")},\n  limit: ${SHOWN},\n});`;
+      code = `const { results, correctedKeywords } = keywordSearch.bestMatch(${JSON.stringify(text)}, {\n  fields: ["name", "nameStem"],\n  conditions: ${block("  ")},\n  limit: ${SHOWN},\n});`;
     } else if (conds.length) {
       code = `const results = store.search(${block("")});`;
     } else {
@@ -549,7 +552,7 @@ import { makeCatalog } from "./catalog.js";
     let shown, total, fixes = {}, matched = new Set(), ms;
 
     if (text) {
-      const t = timed(() => keywordSearch.bestMatch(text, { fields: ["name"], conditions, limit: SHOWN }));
+      const t = timed(() => keywordSearch.bestMatch(text, { fields: KEYWORD_FIELDS, conditions, limit: SHOWN }));
       ms = t.ms;
       shown = t.result.results;
       fixes = t.result.correctedKeywords;
@@ -708,7 +711,7 @@ import { makeCatalog } from "./catalog.js";
     store.loadRows(rows);
     store.prepare();
     keywordSearch = new KeywordSearch(store);
-    keywordSearch.bestMatch("warm up", { fields: ["name"], limit: 1 });
+    keywordSearch.bestMatch("warm up", { fields: KEYWORD_FIELDS, limit: 1 });
     dictionary = new DictionaryTrie();
     for (const r of rows) dictionary.addText(r.name.toLowerCase());
     wire();
